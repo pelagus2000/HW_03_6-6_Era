@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'fpages',
     'users',
     'post',
+    'category',
+    'postcategory'
 ]
 
 SITE_ID=1
