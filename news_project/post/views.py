@@ -4,6 +4,14 @@ from .models import Posts
 from pprint import pprint
 from .forms import NewsForm, ArticleForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+# from django.shortcuts import redirect
+#
+# def index(request):
+#     return redirect('post:post')
 
 class PostsList(ListView):
     model = Posts
@@ -31,15 +39,17 @@ class PostsList(ListView):
         context['filterset'] = self.filterset
         return context
 
-class PostsDetail(DetailView):
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
+class PostsDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     # Модель всё та же, но мы хотим получать информацию по отдельному товару
     model = Posts
     # Используем другой шаблон — product.html
     template_name = 'post.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
-
-
+    # Разрешаем доступ только пользователям в группе "author"
+    permission_required = 'post.view_posts'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,11 +59,15 @@ class PostsDetail(DetailView):
         pprint(context)
         return context
 
-class NewsCreate(CreateView):
+
+@method_decorator(login_required, name='dispatch')
+class NewsCreate(PermissionRequiredMixin, CreateView):
     form_class = NewsForm
     model = Posts
     template_name = 'news_edit.html'
     success_url = reverse_lazy('posts_list')
+
+    permission_required = 'post.add_posts'
 
     def form_valid(self, form):
         # Устанавливаем тип блога как 'News' перед сохранением
@@ -61,33 +75,46 @@ class NewsCreate(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreate(CreateView):
+@method_decorator(login_required, name='dispatch')
+class ArticleCreate(PermissionRequiredMixin, CreateView):
     form_class = ArticleForm
     model = Posts
     template_name = 'article_edit.html'
     success_url = reverse_lazy('posts_list')
+
+    permission_required = 'post.add_posts'
 
     def form_valid(self, form):
         # Устанавливаем тип блога как 'Article' перед сохранением
         form.instance.blog_type = 'Article'
         return super().form_valid(form)
 
-class NewsUpdate(UpdateView):
+
+class NewsUpdate(PermissionRequiredMixin, UpdateView):
     form_class = NewsForm
     model = Posts
     template_name = 'news_edit.html'
+    permission_required = 'post.change_posts'
+    success_url = reverse_lazy('posts_list')
 
-class NewsDelete(DeleteView):
+
+class NewsDelete(PermissionRequiredMixin, DeleteView):
     model = Posts
     template_name = 'news_delete.html'
     success_url = reverse_lazy('posts_list')
+    permission_required = 'post.delete_posts'
 
-class ArticleUpdate(UpdateView):
+
+class ArticleUpdate(PermissionRequiredMixin, UpdateView):
     form_class = ArticleForm
     model = Posts
     template_name = 'news_edit.html'
+    permission_required = 'post.change_posts'
+    success_url = reverse_lazy('posts_list')
 
-class ArticleDelete(DeleteView):
+
+class ArticleDelete(PermissionRequiredMixin, DeleteView):
     model = Posts
     template_name = 'article_delete.html'
     success_url = reverse_lazy('posts_list')
+    permission_required = 'post.delete_posts'

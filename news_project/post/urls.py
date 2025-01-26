@@ -1,9 +1,15 @@
+from operator import index
+
 from django.urls import path
 # Импортируем созданное нами представление
-from .views import PostsList, PostsDetail, NewsCreate, ArticleCreate, NewsDelete, NewsUpdate,ArticleUpdate, ArticleDelete
+from .views import (PostsList, PostsDetail, NewsCreate, ArticleCreate, NewsDelete, NewsUpdate,
+                    ArticleUpdate, ArticleDelete)
 
 
+# app_name='post'
 urlpatterns = [
+   # path('', index, name='index'),
+
    path('', PostsList.as_view(), name='posts_list'),
    path('<int:pk>', PostsDetail.as_view(), name='post_detail'),
    path('posts/create/news/', NewsCreate.as_view(), name='news_create'),

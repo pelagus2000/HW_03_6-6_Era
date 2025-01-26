@@ -3,12 +3,7 @@
 {% load custom_filters %}
 
 {% block content %}
-    <h2>Фильтр новостей</h2>
-    <!-- Форма фильтрации -->
-    <form method="get">
-        {{ filterset.form.as_p }}
-        <button type="submit" class="btn btn-primary">Найти</button>
-    </form>
+
 
     <hr>
 
@@ -61,5 +56,10 @@
            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
        {% endif %}
    {% endif %}
-
+    <h2>Фильтр новостей</h2>
+    <!-- Форма фильтрации -->
+    <form method="get">
+        {{ filterset.form.as_p }}
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
 {% endblock content %}

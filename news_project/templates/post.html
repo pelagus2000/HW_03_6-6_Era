@@ -10,4 +10,7 @@
     <p>{{ post.date|date:"M d Y l" }}</p>
     <h1>{{ comment|censor }}</h1>
     <h3>POST DETAIL READY</h3>
+    <button><a href="{% url 'news_update' post.id %}">Update</a></button>
+    <button><a href="{% url 'news_delete' post.id %}">Delete</a></button>
+
 {% endblock content %}
